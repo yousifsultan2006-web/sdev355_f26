@@ -2,6 +2,8 @@ import Header from "./components/Header"
 import Footer from "./components/Footer"
 import BookCard from "./components/BookCard"
 import Panel from "./components/Panel"
+import Search from "./components/Search"
+import { useState } from "react"
 
 const BOOKS = [
     {
@@ -54,16 +56,26 @@ const BOOKS = [
     },
 ];
 
-const currentlyReading = BOOKS.filter(el => el.status === "reading");
-const finishedReading = BOOKS.filter(el => el.status === "finished");
-const wishlist = BOOKS.filter(el => el.status === "want");
-const unstarted = BOOKS.filter(el => el.status === "unstarted");
+
 
 export default function App() {
+    const [books, setBooks] = useState(BOOKS);
+    const [query, setQuery] = useState("");
+
+    const filteredBooks = query ?
+    books.filter(el => el.title.toLowerCase().includes(query.toLowerCase())) :
+    books;
+
+    //derived values
+    const currentlyReading = filteredBooks.filter(el => el.status === "reading");
+    const finishedReading = filteredBooks.filter(el => el.status === "finished");
+    const wishlist = filteredBooks.filter(el => el.status === "want");
+    const unstarted = filteredBooks.filter(el => el.status === "unstarted");
+   
     return (
         <div className="app">
             <Header />
-
+            <Search value = {query} onQueryChange={setQuery}></Search>
             <Panel title="Currently reading">
                 {currentlyReading.length > 0 && 
                  currentlyReading.map(book => <BookCard key={book.id} book={book} /> )}
